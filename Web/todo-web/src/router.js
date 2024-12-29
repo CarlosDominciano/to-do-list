@@ -1,12 +1,12 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
-import Todo from './components/Task';
+import Task from './components/Task';
 
 function Router() {
   return (
     <BrowserRouter>                                        
       <Routes>                                                
-				<Route path="*" element={<Todo />} />    
+				<Route path="*" element={<Task />} />    
       </Routes>
     </BrowserRouter>
   );

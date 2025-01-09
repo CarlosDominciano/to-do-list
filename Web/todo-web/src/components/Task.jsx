@@ -2,20 +2,22 @@ import React, { useEffect, useState } from 'react';
 import api from '../api';
 
 const Task = () => {
-    const [tasks, setTasks] = useState([]);
+    const [tasks, setTasks] = useState([]); // Inicialmente vazio
     const [newTask, setNewTask] = useState('');
 
     useEffect(() => {
         api.get("/api/tasks")
-            .then(response => setTasks(response.data))
+            .then(response => {
+                if (response.status === 204 || !response.data) {
+                    // Nenhum conteúdo retornado pela API
+                    console.log("No tasks found (204 response).");
+                    setTasks([]); // Garante que o estado seja uma lista vazia
+                } else {
+                    setTasks(response.data); // Atualiza com as tasks retornadas
+                }
+            })
             .catch(error => console.error("There was an error fetching the tasks!", error));
     }, []);
-
-    useState(() => {
-        api.get("/api/tasks")                               // invocando o métask "get" do axios utilizando a URL base instanciada em "api.js"
-        .then(response => setTasks(response.data))
-        .catch(error => console.error("There was an error fetching the tasks!", error));
-    })
 
     const addTask = () => {
         api.post("/api/tasks", { 
@@ -32,7 +34,7 @@ const Task = () => {
 
     return (
         <div>
-            <h1>To-Do List - Mo te amo</h1>
+            <h1>To-Do List</h1>
             <input 
                 type="text" 
                 value={newTask} 
@@ -41,9 +43,13 @@ const Task = () => {
             />
             <button onClick={addTask}>Add Task</button>
             <ul>
-                {tasks.map(task => (
-                    <li key={task.id}>{task.description}</li>
-                ))}
+                {tasks.length > 0 ? (
+                    tasks.map(task => (
+                        <li key={task.id}>{task.description}</li>
+                    ))
+                ) : (
+                    <p>No tasks available.</p> // Exibe mensagem se não houver tasks
+                )}
             </ul>
         </div>
     );
